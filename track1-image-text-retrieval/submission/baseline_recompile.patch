@@ -1,0 +1,57 @@
+diff --git a/compile_and_profile.py b/compile_and_profile.py
+index 298a012..053f60a 100644
+--- a/compile_and_profile.py
++++ b/compile_and_profile.py
+@@ -22,7 +22,7 @@ def compile_model(model, device, input_specs):
+         model=model,
+         device=device,
+         input_specs=input_specs,
+-        options="--target_runtime qnn_lib_aarch64_android --truncate_64bit_io"
++        options="--target_runtime qnn_context_binary --truncate_64bit_io"
+     )
+     return compile_job.job_id
+ 
+diff --git a/export_onnx.py b/export_onnx.py
+index 19668b2..1564efc 100644
+--- a/export_onnx.py
++++ b/export_onnx.py
+@@ -80,13 +80,12 @@ torch.onnx.export(
+     image_onnx_path,
+     input_names=["image"],
+     output_names=["embedding"],
+-    opset_version=18,
++    opset_version=17,
+     do_constant_folding=True,
+     dynamic_axes=None,
+     verbose=False,
+     export_params=True,
+     training=torch.onnx.TrainingMode.EVAL,
+-    dynamo=True,
+ )
+ 
+ # -----------------------------
+@@ -101,13 +100,12 @@ torch.onnx.export(
+     text_onnx_path,
+     input_names=["text"],
+     output_names=["text_embedding"],
+-    opset_version=18,
++    opset_version=17,
+     do_constant_folding=True,
+     dynamic_axes=None,
+     verbose=False,
+     export_params=True,
+     training=torch.onnx.TrainingMode.EVAL,
+-    dynamo=True,
+ )
+ 
+ print("\nExport complete.")
+diff --git a/requirements.txt b/requirements.txt
+index 0a9dc3f..c638ff7 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -6,4 +6,4 @@ scikit-learn
+ qai_hub
+ qai_hub_models
+ onnxscript
+-clip @ git+https://github.com/openai/CLIP.git@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1
++clip @ git+https://github.com/openai/CLIP.git # @dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1

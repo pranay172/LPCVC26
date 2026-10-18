@@ -1,0 +1,9 @@
+[submodule "track1-image-text-retrieval/26LPCVC_Track1_Sample_Solution"]
+	path = track1-image-text-retrieval/26LPCVC_Track1_Sample_Solution
+	url = https://github.com/lpcvai/26LPCVC_Track1_Sample_Solution.git
+[submodule "track2-video-action-recognition/26LPCVC_Track2_Sample_Solution"]
+	path = track2-video-action-recognition/26LPCVC_Track2_Sample_Solution
+	url = https://github.com/lpcvai/26LPCVC_Track2_Sample_Solution.git
+[submodule "track3-ai-image-detection/26LPCVC_Track3_Sample_Solution"]
+	path = track3-ai-image-detection/26LPCVC_Track3_Sample_Solution
+	url = https://github.com/lpcvai/26LPCVC_Track3_Sample_Solution.git

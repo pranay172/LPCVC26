@@ -1,0 +1,9 @@
+torch
+torchvision
+transformers
+pandas
+numpy
+scikit-learn
+qai_hub
+onnxscript
+clip @ git+https://github.com/openai/CLIP.git

@@ -1,0 +1,79 @@
+import qai_hub
+import onnx
+import os
+import sys
+
+# --- Configuration ---
+ONNX_DIR = "exported_onnx"
+# ---------------------
+
+def run_profile(model, device):
+    """Submit a profile job for the model."""
+    profile_job = qai_hub.submit_profile_job(
+        model=model,
+        device=device,
+        options="--max_profiler_iterations 100"
+    )
+    return profile_job.job_id
+
+def compile_model(model, device, input_specs):
+    """Submits a compile job and returns the job ID."""
+    compile_job = qai_hub.submit_compile_job(
+        model=model,
+        device=device,
+        input_specs=input_specs,
+        options="--target_runtime qnn_context_binary --truncate_64bit_io"
+    )
+    return compile_job.job_id
+
+IMAGE_ONNX_PATH = os.path.join(ONNX_DIR, "image_encoder.onnx")
+TEXT_ONNX_PATH  = os.path.join(ONNX_DIR, "text_encoder.onnx")
+
+if not os.path.exists(ONNX_DIR):
+    print(f"Error: '{ONNX_DIR}' not found. Run export_onnx.py first.")
+    sys.exit(1)
+
+# --- Validate ONNX models ---
+print(f"Loading ONNX Image Encoder from {IMAGE_ONNX_PATH}...")
+onnx_img_model = onnx.load(IMAGE_ONNX_PATH)
+try:
+    onnx.checker.check_model(onnx_img_model)
+    print("Image ONNX model is valid ✅")
+except onnx.checker.ValidationError as e:
+    print("Image ONNX model validation failed ❌"); print(e)
+
+print(f"\nLoading ONNX Text Encoder from {TEXT_ONNX_PATH}...")
+onnx_txt_model = onnx.load(TEXT_ONNX_PATH)
+try:
+    onnx.checker.check_model(onnx_txt_model)
+    print("Text ONNX model is valid ✅")
+except onnx.checker.ValidationError as e:
+    print("Text ONNX model validation failed ❌"); print(e)
+
+target_device = qai_hub.Device("XR2 Gen 2 (Proxy)")
+
+# --- Compile ---
+print("\nSubmitting compilation jobs to QAI Hub...")
+img_id = compile_model(
+    model=onnx_img_model,
+    device=target_device,
+    input_specs={"image": (1, 3, 224, 224)}        # same as sample solution
+)
+txt_id = compile_model(
+    model=onnx_txt_model,
+    device=target_device,
+    input_specs={"text": ((1, 77), "int64")}        # same as sample solution
+)
+print(f"Image compilation job ID: {img_id}")
+print(f"Text  compilation job ID: {txt_id}")
+
+# --- Share with organizers ---
+# IMPORTANT: share compile jobs with the LPCVC evaluation account
+# qai_hub.get_job(img_id).modify_sharing(add_emails=["lowpowervision@gmail.com"])
+# qai_hub.get_job(txt_id).modify_sharing(add_emails=["lowpowervision@gmail.com"])
+
+# --- Profile ---
+print("\nSubmitting profiling jobs to QAI Hub...")
+run_profile(model=qai_hub.get_job(img_id).get_target_model(), device=target_device)
+run_profile(model=qai_hub.get_job(txt_id).get_target_model(), device=target_device)
+print("Profiling jobs submitted for both models.")

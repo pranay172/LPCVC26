@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Datasets (download separately, see each track's README)
+dataset/
+QEVD-FIT-300K/
+QEVD-FIT-300k-Part-*/
+refactored_dataset/
+preprocessed_val/
+*.mp4
+*.zip
+
+# Model weights and compiled artifacts
+model_checkpoints/
+export_assets/
+exported_onnx/
+*.pth
+*.onnx
+*.bin
+*.raw
+*.h5
+*.sarif
+
+# Local outputs
+results.json
